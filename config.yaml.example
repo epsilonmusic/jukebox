@@ -1,2 +1,3 @@
-library: ~/Music/Epsilon Library
+library:  ~/Music/Epsilon Library
 data_dir: data
+hub:      http://epsilon.ideahack.devyn.me/

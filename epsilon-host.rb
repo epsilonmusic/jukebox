@@ -5,19 +5,97 @@ require 'bundler'
 Bundler.setup(:default)
 
 require 'fileutils'
+require 'json'
 require 'yaml'
 require 'ruby-mpd'
+require 'logger'
+require 'uri'
+require 'net/http'
 
 class EpsilonHost
-  def initialize(config: {})
-    @config = config.dup
+  DEFAULT_CONFIG = {
+    'library'  => "~/Music/Epsilon Library",
+    'data_dir' => "data",
+    'hub'      => "http://epsilon.ideahack.devyn.me/"
+  }
 
-    @config['library']  ||= "~/Music/Epsilon Library"
-    @config['data_dir'] ||= "data"
+  def initialize(config={})
+    @config = DEFAULT_CONFIG.merge(config)
+
+    @hub_uri = URI.parse(@config['hub'])
+
+    @log = Logger.new($stderr)
   end
 
   def start
+    unless File.directory?(data)
+      initialize_data_dir
+    end
+
+    # Start MPD
+
+    @log.info "Starting MPD"
+
+    at_exit do
+      Process.kill("INT", @mpd_pid) if @mpd_pid
+      Process.waitall
+    end
+
+    @mpd_pid = Process.spawn("mpd --no-daemon #{data("mpd.conf")}")
+
+    [:INT, :TERM].each do |signal|
+      trap signal, :DEFAULT
+    end
+
+    # Connect to MPD, tell it to update
+
+    @mpd = MPD.new 'localhost', 6616, :callbacks => true
+
+    proc do
+      @log.debug "Connecting"
+      begin
+        @mpd.connect
+      rescue
+        sleep 0.1
+        redo
+      end
+    end.call
+
+    @log.debug "Connected; clearing state"
+
+    @mpd.clear
+
+    @log.debug "Updating database"
+
+    @mpd.update
+    sleep 1 while @mpd.status[:updating_db]
+
+    @log.debug "Database updated"
+
+    # Generate playlist and upload
+
+    @log.debug "Generating playlist"
+
+    @mpd.add '/'
+
+    upload_playlist
+
+    # Start playing
+
+    @mpd.on :song do |song|
+      @log.info "Song changed to #{song.artist} - #{song.title}"
+      send_position
+    end
+
+    @mpd.play
+
+    sleep
+  end
+
+  def initialize_data_dir
     # Make MPD data dir
+
+    @log.debug "Initializing data directory"
 
     FileUtils.mkdir_p(data("mpd"))
     FileUtils.mkdir_p(data("mpd/playlists"))
@@ -65,36 +143,64 @@ audio_output {
 END
       end
     end
+  end
 
-    # Start MPD
+  def upload_playlist
+    connect_to_hub do |http|
+      r = Net::HTTP::Put.new(hub_path('host'))
 
-    @mpd_pid = Process.spawn("mpd --no-daemon #{data("mpd.conf")}")
+      r['Content-Type'] = 'application/json'
+      r.body = {
+        'playlist' => @mpd.queue.map { |song| format_mpd_song(song) }
+      }.to_json
 
-    [:INT, :TERM].each do |signal|
-      trap signal do
-        Process.kill("INT", @mpd_pid)
-        Process.waitall
-        exit
-      end
+      res = http.request(r)
+
+      @log.debug "Playlist uploaded, response = #{res.inspect}"
     end
+  end
 
-    # Connect to MPD, tell it to update
+  def send_position
+    connect_to_hub do |http|
+      status = @mpd.status
 
-    sleep 1
+      r = Net::HTTP::Put.new(hub_path('host/position'))
 
-    @mpd = MPD.new 'localhost', 6616
-    @mpd.connect
-    @mpd.update
+      r['Content-Type'] = 'application/json'
+      r.body = {
+        'position' => status[:song],
+        'elapsed'  => status[:time][0]
+      }.to_json
 
-    @mpd.add '/'
-    @mpd.play
+      res = http.request(r)
 
-    sleep
+      @log.debug "Position sent, response = #{res.inspect}"
+    end
   end
 
   private
 
-  def data(path)
+  def connect_to_hub
+    Net::HTTP.start(@hub_uri.host, @hub_uri.port) do |http|
+      yield http
+    end
+  end
+
+  def hub_path(path)
+    URI.join(@hub_uri, path).path
+  end
+
+  def format_mpd_song(song)
+    {
+      'id'       => song.id,
+      'title'    => song.title,
+      'artist'   => song.artist,
+      'album'    => song.album,
+      'duration' => song.time
+    }
+  end
+
+  def data(path="")
     File.expand_path(File.join(@config['data_dir'], path))
   end
 end
@@ -104,5 +210,5 @@ if __FILE__ == $0
     abort "Usage: #$0 <path/to/config.yaml>"
   end
 
-  EpsilonHost.new(config: YAML.load_file(ARGV[0])).start
+  EpsilonHost.new(YAML.load_file(ARGV[0])).start
 end
