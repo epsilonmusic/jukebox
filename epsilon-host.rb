@@ -11,6 +11,7 @@ require 'ruby-mpd'
 require 'logger'
 require 'uri'
 require 'net/http'
+require 'thread'
 
 class EpsilonHost
   DEFAULT_CONFIG = {
@@ -25,6 +26,8 @@ class EpsilonHost
     @hub_uri = URI.parse(@config['hub'])
 
     @log = Logger.new($stderr)
+
+    @event_queue = Queue.new
   end
 
   def start
@@ -52,7 +55,7 @@ class EpsilonHost
     @mpd = MPD.new 'localhost', 6616, :callbacks => true
 
     proc do
-      @log.debug "Connecting"
+      @log.debug "Connecting to MPD"
       begin
         @mpd.connect
       rescue
@@ -61,7 +64,7 @@ class EpsilonHost
       end
     end.call
 
-    @log.debug "Connected; clearing state"
+    @log.debug "Connected to MPD; clearing state"
 
     @mpd.clear
 
@@ -72,13 +75,17 @@ class EpsilonHost
 
     @log.debug "Database updated"
 
-    # Generate playlist and upload
+    # Generate queue and upload
 
-    @log.debug "Generating playlist"
+    @log.debug "Generating queue"
 
     @mpd.add '/'
 
-    upload_playlist
+    upload_queue
+
+    # Open command stream
+
+    open_command_stream
 
     # Start playing
 
@@ -89,7 +96,17 @@ class EpsilonHost
 
     @mpd.play
 
-    sleep
+    loop do
+      event, data = @event_queue.pop
+
+      case event
+      when "movesong"
+        @log.info "Move ##{data['src_pos']} => ##{data['dest_pos']} requested"
+        @mpd.move data['src_pos'], data['dest_pos']
+      else
+        @log.warn "Unknown event received: #{event} #{data.inspect}"
+      end
+    end
   end
 
   def initialize_data_dir
@@ -145,18 +162,18 @@ END
     end
   end
 
-  def upload_playlist
+  def upload_queue
     connect_to_hub do |http|
       r = Net::HTTP::Put.new(hub_path('host'))
 
       r['Content-Type'] = 'application/json'
       r.body = {
-        'playlist' => @mpd.queue.map { |song| format_mpd_song(song) }
+        'queue' => @mpd.queue.map { |song| format_mpd_song(song) }
       }.to_json
 
       res = http.request(r)
 
-      @log.debug "Playlist uploaded, response = #{res.inspect}"
+      @log.debug "Queue uploaded, response = #{res.inspect}"
     end
   end
 
@@ -175,6 +192,39 @@ END
       res = http.request(r)
 
       @log.debug "Position sent, response = #{res.inspect}"
+    end
+  end
+
+  def open_command_stream
+    @command_stream_thread ||= Thread.start do
+      @log.debug "Connecting to command stream"
+
+      connect_to_hub do |http|
+        req = Net::HTTP::Get.new(hub_path('host/commands.stream'))
+
+        http.request(req) do |res|
+          if res.is_a? Net::HTTPOK
+            @log.debug "Connected to command stream"
+
+            buffer = ""
+
+            res.read_body do |chunk|
+              buffer << chunk
+
+              while message = buffer.slice!(/.*\r?\n\r?\n/m)
+                event = message.match(/^event: (.*)/)[1]
+                data  = JSON.parse(message.match(/^data: (.*)/)[1])
+
+                @event_queue << [event, data]
+              end
+            end
+
+            @log.warn "Command stream ended!"
+          else
+            @log.warn "Failed to connect to command stream"
+          end
+        end
+      end
     end
   end
 
