@@ -44,7 +44,7 @@ class EpsilonHost
       Process.waitall
     end
 
-    @mpd_pid = Process.spawn("mpd --no-daemon #{data("mpd.conf")}")
+    @mpd_pid = Process.spawn("mpd", "--no-daemon", data("mpd.conf"))
 
     [:INT, :TERM].each do |signal|
       trap signal, :DEFAULT
