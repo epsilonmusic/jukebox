@@ -94,6 +94,13 @@ class EpsilonHost
       send_position
     end
 
+    @mpd.on :state do |state|
+      if state == :play
+        @log.info "Started playing"
+        send_position
+      end
+    end
+
     @mpd.repeat = true
 
     @mpd.play
@@ -108,6 +115,20 @@ class EpsilonHost
       when "setposition"
         @log.info "Set position = ##{data['position']} requested"
         @mpd.play data['position']
+      when "pause"
+        unless @mpd.paused?
+          @log.info "Pause requested"
+          @mpd.pause = true
+        else
+          @log.info "Pause requested, but already paused"
+        end
+      when "unpause"
+        if @mpd.paused?
+          @log.info "Unpause requested"
+          @mpd.pause = false
+        else
+          @log.info "Unpause requested, but not paused"
+        end
       else
         @log.warn "Unknown event received: #{event} #{data.inspect}"
       end
