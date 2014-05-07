@@ -94,6 +94,8 @@ class EpsilonHost
       send_position
     end
 
+    @mpd.repeat = true
+
     @mpd.play
 
     loop do
@@ -103,6 +105,9 @@ class EpsilonHost
       when "movesong"
         @log.info "Move ##{data['src_pos']} => ##{data['dest_pos']} requested"
         @mpd.move data['src_pos'], data['dest_pos']
+      when "setposition"
+        @log.info "Set position = ##{data['position']} requested"
+        @mpd.play data['position']
       else
         @log.warn "Unknown event received: #{event} #{data.inspect}"
       end
@@ -211,7 +216,9 @@ END
             res.read_body do |chunk|
               buffer << chunk
 
-              while message = buffer.slice!(/.*\r?\n\r?\n/m)
+              while message = buffer.slice!(/(?:(?!\r?\n\r?\n).)*\r?\n\r?\n/m)
+                p message
+
                 event = message.match(/^event: (.*)/)[1]
                 data  = JSON.parse(message.match(/^data: (.*)/)[1])
 
