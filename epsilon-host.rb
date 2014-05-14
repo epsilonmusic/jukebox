@@ -28,6 +28,11 @@ class EpsilonHost
     @log = Logger.new($stderr)
 
     @event_queue = Queue.new
+
+    @id, @token = @config['id'], @config['token']
+
+    raise ArgumentError, "id missing from config" unless @id
+    raise ArgumentError, "token missing from config" unless @token
   end
 
   def start
@@ -190,7 +195,9 @@ END
 
   def upload_queue
     connect_to_hub do |http|
-      r = Net::HTTP::Put.new(hub_path('host'))
+      r = Net::HTTP::Put.new(hub_path("host/#@id"))
+
+      add_auth_headers(r)
 
       r['Content-Type'] = 'application/json'
       r.body = {
@@ -207,7 +214,9 @@ END
     connect_to_hub do |http|
       status = @mpd.status
 
-      r = Net::HTTP::Put.new(hub_path('host/position'))
+      r = Net::HTTP::Put.new(hub_path("host/#@id/position"))
+
+      add_auth_headers(r)
 
       r['Content-Type'] = 'application/json'
       r.body = {
@@ -226,7 +235,9 @@ END
       @log.debug "Connecting to command stream"
 
       connect_to_hub do |http|
-        req = Net::HTTP::Get.new(hub_path('host/commands.stream'))
+        req = Net::HTTP::Get.new(hub_path("host/#@id/commands.stream"))
+
+        add_auth_headers(req)
 
         http.request(req) do |res|
           if res.is_a? Net::HTTPOK
@@ -238,7 +249,6 @@ END
               buffer << chunk
 
               while message = buffer.slice!(/(?:(?!\r?\n\r?\n).)*\r?\n\r?\n/m)
-                p message
 
                 event = message.match(/^event: (.*)/)[1]
                 data  = JSON.parse(message.match(/^data: (.*)/)[1])
@@ -280,6 +290,10 @@ END
 
   def data(path="")
     File.expand_path(File.join(@config['data_dir'], path))
+  end
+
+  def add_auth_headers(request)
+    request["X-Host-Token"] = @token
   end
 end
 
