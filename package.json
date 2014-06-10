@@ -6,5 +6,7 @@
     "resizable": false,
     "width": 300,
     "height": 500
+  },
+  "dependencies": {
   }
 }
