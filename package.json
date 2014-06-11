@@ -8,5 +8,6 @@
     "height": 500
   },
   "dependencies": {
+    "mpd": "1.0.x"
   }
 }
