@@ -1,0 +1,13 @@
+{
+  "name": "epsilon-host",
+  "main": "main.html",
+  "window": {
+    "toolbar": false,
+    "resizable": false,
+    "width": 300,
+    "height": 500
+  },
+  "dependencies": {
+    "mpd": "1.0.x"
+  }
+}

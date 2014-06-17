@@ -1,0 +1,32 @@
+@import url(http://fonts.googleapis.com/css?family=Lato:100,300,400,700);
+
+body {
+  background-color: #444;
+  color: #999;
+  font-family: "Lato", sans-serif;
+  text-align: center;
+}
+
+#host_id {
+  font-size: 3em;
+  margin: 0.2em;
+}
+
+a.button, a.button:visited {
+  display: inline-block;
+  border: 1px solid #fff;
+  color: #fff;
+  margin: 10px;
+  padding: 10px 25px;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+#dragbox {
+  border-radius: 20px;
+  transition: background-color 0.5s ease;
+}
+
+#dragbox.drag_hover {
+  background-color: #0099ff;
+}
