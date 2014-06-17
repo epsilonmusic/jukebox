@@ -1,22 +1,30 @@
 var appConfig = require('./config.js');
 
 $(function () {
-  var loginController = new LoginController({
-    hub: appConfig.hub
+  var hostController = new HostController(appConfig);
+
+  hostController.configureAndThen(function () {
+    hostController.unsharedView();
   });
-
-  loginController.loginView(
-    function () {
-      var registeredHostController = new RegisteredHostController;
-
-      registeredHostController.selectionView();
-    }
-  );
 });
+
+// Ctrl-I = DevTools
 
 $(document).keyup(function (e) {
   if (e.ctrlKey && e.which === 73) {
     e.preventDefault();
     require('nw.gui').Window.get().showDevTools();
   }
+});
+
+// Prevent default action for file drag-and-drop
+
+window.addEventListener("dragover", function (e) {
+  e.preventDefault();
+  return false;
+});
+
+window.addEventListener("drop", function (e) {
+  e.preventDefault();
+  return false;
 });
