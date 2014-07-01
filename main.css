@@ -43,6 +43,12 @@ a.button.orange{
 }
 
 a.button.orange:hover{
+  background-color: #ffa400;
+  border-color: #ffa400;
+  color: #333;
+}
+
+a.button:hover{
   color: #fff;
   border-color: #fff;
   background: rgba(255,255,255,0.2);
@@ -71,6 +77,34 @@ a.button.dark{
 a.button.dark:hover{
   background: #222;
 }
+
+
+a.button.red.filled{
+  background: #e94545;
+  color: #fff;
+  border-color: #e94545;
+}
+
+a.button.red.filled:hover{
+  color: #e94545;
+}
+
+a.button.filled:hover{
+  background: #fff;
+  border-color: #fff;
+}
+
+a.button.blue{
+  border-color: #0093FF;
+  color: #0093FF;
+}
+
+a.button.blue:hover{
+  background-color: #0093FF;
+  border-color: #0093FF;
+  color: #333;
+}
+
 
 .titlebar{
   -webkit-app-region: drag;
@@ -110,8 +144,16 @@ a.button.dark:hover{
 
 .logo.inner{
   margin-top: 2em;
-  margin-bottom: 2em;
+  margin-bottom: 1em;
   padding: 0;
+}
+
+.label{
+  font-size: 0.8em;
+}
+
+#host_id{
+  font-weight: 700;
 }
 
 form input{
@@ -195,4 +237,10 @@ form input.submit:hover{
 #share_link{
   position: relative;
   z-index: 999;
+}
+
+.playing .toFill{
+  font-family: "Lato", sans-serif;
+  text-transform: uppercase;
+  fill: #666;
 }
