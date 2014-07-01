@@ -7,7 +7,7 @@ function LoginController(config) {
 LoginController.prototype.loginView = function (success) {
   var self = this;
 
-  $("body").load("views/login.html", function () {
+  $("#yield").load("views/login.html", function () {
 
     $("#login").submit(function (e) {
       e.preventDefault();

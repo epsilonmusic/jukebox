@@ -5,7 +5,8 @@
     "toolbar": false,
     "resizable": false,
     "width": 300,
-    "height": 500
+    "height": 500,
+    "frame": false
   },
   "dependencies": {
     "mpd": "1.0.x"

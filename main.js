@@ -1,3 +1,5 @@
+window.guiWindow = require('nw.gui').Window.get();
+
 var appConfig = require('./config.js');
 
 $(function () {

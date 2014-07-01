@@ -43,17 +43,21 @@ HostController.prototype.unsharedView = function () {
     switch (name) {
       case "default":
         $("#dragbox .message").text("drop music folder here");
+        $("#share_link").addClass("disabled");
         break;
       case "error":
         $("#dragbox .message").text(message);
+        $("#share_link").addClass("disabled");
         break;
       case "ready":
         $("#dragbox .message").text("ready");
+        $("#share_link").removeClass("disabled");
+        $("#dragbox").addClass("ready");
         break;
     }
   }
 
-  $("body").load("views/host_unshared.html", function () {
+  $("#yield").load("views/host_unshared.html", function () {
     if (typeof localStorage["library"] !== 'undefined') {
       setState('ready');
     }
@@ -125,7 +129,7 @@ HostController.prototype.unsharedView = function () {
 HostController.prototype.sharedView = function () {
   var self = this;
 
-  $("body").load("views/host_shared.html", function () {
+  $("#yield").load("views/host_shared.html", function () {
     $("#host_id").text(localStorage["id"]);
 
     var playlistUrl =

@@ -1,11 +1,24 @@
 @import url(http://fonts.googleapis.com/css?family=Lato:100,300,400,700);
 
 body {
-  background-color: #444;
+  background-color: #333;
   color: #999;
   font-family: "Lato", sans-serif;
   text-align: center;
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
 }
+
+.ani {
+  -webkit-transform: translate3d(0, 0, 0);
+  -webkit-transition: all 0.2s ease-out;
+        -moz-transition: all 0.2s ease-out;
+        -o-transition: all 0.2s ease-out;
+        transition: all 0.2s ease-out;
+}
+
+* { box-sizing: Border-box }
 
 #host_id {
   font-size: 3em;
@@ -17,9 +30,124 @@ a.button, a.button:visited {
   border: 1px solid #fff;
   color: #fff;
   margin: 10px;
-  padding: 10px 25px;
+  padding: 0.5em;
+  width: 12em;
   text-decoration: none;
   text-transform: uppercase;
+  font-family: "Lato", sans-serif;
+}
+
+a.button.orange{
+  border-color: #ffa400;
+  color: #ffa400;
+}
+
+a.button.orange:hover{
+  color: #fff;
+  border-color: #fff;
+  background: rgba(255,255,255,0.2);
+}
+
+a.button.disabled{
+  border-color: #555;
+  color: #555;
+}
+
+a.button.disabled:hover{
+  border-color: #555;
+  color: #555;
+  background: none;
+}
+
+a.button.dark{
+  width: auto;
+  border: 1px solid #222;
+  color: #fff;
+  font-weight: 300;
+  font-size: 0.8em;
+  padding: 0.8em;
+}
+
+a.button.dark:hover{
+  background: #222;
+}
+
+.titlebar{
+  -webkit-app-region: drag;
+  height: 2em;
+  border-bottom: 1px solid #444;
+  width: 100%;
+}
+
+.titlebar .controls{
+  width: 12px;
+  height: 12px;
+  border-radius: 6px;
+  margin: 8px;
+  margin-right: 0;
+  float: left;
+}
+
+.titlebar .close{
+  background: #e94545;
+}
+
+.titlebar .close:hover{
+  background: #fff;
+}
+
+.titlebar .min{
+  background: #ffa400;
+}
+
+.titlebar .min:hover{
+  background: #fff;
+}
+
+.logo{
+  padding-left: 1.5em;
+}
+
+.logo.inner{
+  margin-top: 2em;
+  margin-bottom: 2em;
+  padding: 0;
+}
+
+form input{
+  font-family: "Lato", sans-serif;
+  border: 0;
+  border-bottom: 1px solid #555;
+  width: 15em;
+  background: none;
+  outline: none;
+  padding: 0.5em 0;
+  color: #fff;
+  font-size: 1.2em;
+  font-weight: 300;
+}
+
+form input.last{
+  border-bottom: 0;
+}
+
+form input.submit{
+  margin-top: 1em;
+  width: 100%;
+  border-top: 1px solid #444;
+  border-bottom: 1px solid #444;
+  text-transform: uppercase;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+form input.submit:hover{
+  background: #393939;
+}
+
+.message{
+  font-size: 1.4em;
+  font-weight: 300;
 }
 
 #dragbox {
@@ -27,6 +155,44 @@ a.button, a.button:visited {
   transition: background-color 0.5s ease;
 }
 
-#dragbox.drag_hover {
-  background-color: #0099ff;
+#dragbox .overlay{
+  display: block;
+  z-index: 99;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top:28px;
+  left:0;
+}
+
+#over-arrow, #ready{
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+}
+
+#dragbox.drag_hover .message, #dragbox.drag_hover~.button{
+  opacity: 0.25;
+}
+
+#dragbox.drag_hover #under-arrow, #dragbox.drag_hover #ready{
+  display: none;
+}
+
+#dragbox.drag_hover #over-arrow{
+  opacity: 1;
+}
+
+#dragbox.ready #under-arrow{
+  display: none;
+}
+
+#dragbox.ready #ready{
+  opacity: 1;
+}
+
+#share_link{
+  position: relative;
+  z-index: 999;
 }

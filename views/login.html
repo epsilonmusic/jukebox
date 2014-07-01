@@ -1,8 +1,44 @@
 <form id="login">
+  <div class="logo">
+    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/" x="2px" y="0px" width="70px" height="125px" viewBox="-2 0 28.1 25.2" enable-background="new 0 0 19.1 25.2" xml:space="preserve">
+
+      <path opacity="0" fill="none" stroke-width="2" stroke="#0099ff" stroke-linecap="round" stroke-miterlimit="10" d="M0.5,3.7c1.9-1.9,4.6-3.2,7.6-3.2
+        c4.8,0,8.6,3.9,8.6,8.6c0,3.8-3.1,6.9-6.9,6.9">
+
+        <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="400 10 10" to="360 10 10" dur="2.5s" begin="1s" calcMode="spline" keySplines="0 0 0.58 1" keyTimes="0;1" repeatCount="1"></animateTransform>
+
+        <animate id="animation1" attributeName="opacity" begin="1s" from="0" to="1" dur="2.5s" fill="freeze"></animate>
+
+      </path>
+
+      <path opacity="0" fill="none" stroke-width="2" stroke="#0099ff" stroke-linecap="round" stroke-miterlimit="10" d="M18.6,22.8c-2.3,1.2-5,1.9-7.8,1.9
+        C6.7,24.7,3,22.9,0.5,20">
+
+        <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="300 10 10" to="360 10 10" dur="2s" begin="2s" calcMode="spline" keySplines="0 0 0.58 1" keyTimes="0;1" repeatCount="1"></animateTransform>
+
+        <animate id="animation1" attributeName="opacity" begin="2s" from="0" to="1" dur="2s" fill="freeze"></animate>
+
+      </path>
+
+      <path opacity="0" fill="none" stroke-width="2" stroke="#0099ff" stroke-linecap="round" stroke-miterlimit="10" d="M10.6,19.6c-3.3,0-6-2.7-6-6
+        c0-2.6,2.1-4.8,4.8-4.8">
+
+        <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="300 10 10" to="360 10 10" dur="1.5s" begin="1.5s" calcMode="spline" keySplines="0 0 0.58 1" keyTimes="0;1" repeatCount="1"></animateTransform>
+
+        <animate id="animation1" attributeName="opacity" begin="1.5s" from="0" to="1" dur="2s" fill="freeze"></animate>
+
+      </path>
+    </svg>
+  </div>
+  <br>
   <p class="error"></p>
 
   <input name="email"    placeholder="Email" />
-  <input name="password" placeholder="Password" type="password" />
+  <input name="password" placeholder="Password" type="password" class="last" />
 
-  <input value="Login" type="submit" />
+  <input value="Login" type="submit" class="submit ani"/>
 </form>
+
+
+<br>
+<a href="#" id="register" class="button dark">Register</a>
