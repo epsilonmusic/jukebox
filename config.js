@@ -1,5 +1,6 @@
 module.exports = {
 
-  "hub": "http://epsilon.ideahack.devyn.me/"
+  "hub": "http://epsilonmusic.co/"
+  //"hub": "http://localhost:3000/"
 
 };
