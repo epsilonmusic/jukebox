@@ -1,6 +1,7 @@
 {
   "name": "epsilon-host",
-  "main": "main.html",
+  "version": "0.0.1",
+  "main": "app/main.html",
   "window": {
     "toolbar": false,
     "resizable": false,
