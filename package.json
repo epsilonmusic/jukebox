@@ -1,5 +1,5 @@
 {
-  "name": "epsilon-host",
+  "name": "epsilon-jukebox",
   "version": "0.0.1",
   "main": "app/main.html",
   "window": {

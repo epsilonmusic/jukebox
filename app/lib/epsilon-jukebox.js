@@ -13,7 +13,7 @@ var DEFAULT_CONFIG = {
   hub: "http://epsilon.ideahack.devyn.me"
 };
 
-function EpsilonHost(config) {
+function EpsilonJukebox(config) {
   this.config = Object.create(DEFAULT_CONFIG);
 
   // Merge into config
@@ -35,7 +35,7 @@ function EpsilonHost(config) {
   }
 }
 
-EpsilonHost.prototype.start = function (callback) {
+EpsilonJukebox.prototype.start = function (callback) {
   var self = this;
 
   try {
@@ -81,7 +81,7 @@ EpsilonHost.prototype.start = function (callback) {
   this.connectToMPD(callback);
 };
 
-EpsilonHost.prototype.stop = function (callback) {
+EpsilonJukebox.prototype.stop = function (callback) {
   if (typeof callback === 'function') {
     this.mpdProcess.on('exit', function () { callback(); });
   }
@@ -97,7 +97,7 @@ EpsilonHost.prototype.stop = function (callback) {
   }
 };
 
-EpsilonHost.prototype.connectToMPD = function (callback) {
+EpsilonJukebox.prototype.connectToMPD = function (callback) {
   var self = this;
 
   // Connect to MPD (repeatedly), tell it to update
@@ -120,7 +120,7 @@ EpsilonHost.prototype.connectToMPD = function (callback) {
   });
 };
 
-EpsilonHost.prototype.requeue = function () {
+EpsilonJukebox.prototype.requeue = function () {
   var self = this;
 
   console.log("Updating database");
@@ -144,7 +144,7 @@ EpsilonHost.prototype.requeue = function () {
   this.mpdClient.sendCommand(mpd.cmd("update", []));
 };
 
-EpsilonHost.prototype.mpdStatus = function (callback) {
+EpsilonJukebox.prototype.mpdStatus = function (callback) {
   this.mpdClient.sendCommand(mpd.cmd("status", []), function (err, msg) {
     if (err) throw err;
 
@@ -162,7 +162,7 @@ EpsilonHost.prototype.mpdStatus = function (callback) {
   });
 };
 
-EpsilonHost.prototype.mpdPlaylistInfo = function (callback) {
+EpsilonJukebox.prototype.mpdPlaylistInfo = function (callback) {
   this.mpdClient.sendCommand(mpd.cmd("playlistinfo", []), function (err, msg) {
     if (err) throw err;
 
@@ -189,7 +189,7 @@ EpsilonHost.prototype.mpdPlaylistInfo = function (callback) {
   });
 };
 
-EpsilonHost.prototype.initializeDataDir = function () {
+EpsilonJukebox.prototype.initializeDataDir = function () {
   console.log("Initializing data directory");
 
   fs.mkdirSync(this.data());
@@ -198,7 +198,7 @@ EpsilonHost.prototype.initializeDataDir = function () {
   fs.writeFileSync(this.data("mpd/database"), "");
 };
 
-EpsilonHost.prototype.writeMPDConfig = function () {
+EpsilonJukebox.prototype.writeMPDConfig = function () {
   console.log("Writing MPD config");
 
   var mpdConf = fs.openSync(this.data("mpd.conf"), "w");
@@ -243,13 +243,13 @@ EpsilonHost.prototype.writeMPDConfig = function () {
   fs.closeSync(mpdConf);
 };
 
-EpsilonHost.prototype.uploadQueue = function () {
+EpsilonJukebox.prototype.uploadQueue = function () {
   var self = this;
 
   this.mpdPlaylistInfo(function (queue) {
     var data = {
       queue: queue.map(function (song) {
-        return EpsilonHost.formatMPDSong(song);
+        return EpsilonJukebox.formatMPDSong(song);
       })
     };
 
@@ -268,7 +268,7 @@ EpsilonHost.prototype.uploadQueue = function () {
   });
 };
 
-EpsilonHost.prototype.sendPosition = function () {
+EpsilonJukebox.prototype.sendPosition = function () {
   var self = this;
 
   this.mpdStatus(function (status) {
@@ -288,7 +288,7 @@ EpsilonHost.prototype.sendPosition = function () {
   });
 };
 
-EpsilonHost.prototype.openCommandStream = function () {
+EpsilonJukebox.prototype.openCommandStream = function () {
   var self = this;
 
   console.log("Connecting to command stream");
@@ -342,7 +342,7 @@ EpsilonHost.prototype.openCommandStream = function () {
     });
 };
 
-EpsilonHost.prototype.handleCommand = function (event, data) {
+EpsilonJukebox.prototype.handleCommand = function (event, data) {
   switch (event) {
     case "movesong":
       console.log("Move #", data.src_pos, " => #", data.dest_pos, " requested");
@@ -364,7 +364,7 @@ EpsilonHost.prototype.handleCommand = function (event, data) {
   }
 };
 
-EpsilonHost.prototype.pause = function () {
+EpsilonJukebox.prototype.pause = function () {
   var self = this;
 
   this.mpdStatus(function (status) {
@@ -377,7 +377,7 @@ EpsilonHost.prototype.pause = function () {
   });
 };
 
-EpsilonHost.prototype.unpause = function () {
+EpsilonJukebox.prototype.unpause = function () {
   var self = this;
 
   this.mpdStatus(function (status) {
@@ -390,7 +390,7 @@ EpsilonHost.prototype.unpause = function () {
   });
 };
 
-EpsilonHost.prototype.hubRequest = function(method, endpoint, data, callback) {
+EpsilonJukebox.prototype.hubRequest = function(method, endpoint, data, callback) {
   var requestData = new Buffer(JSON.stringify(data), 'utf8');
 
   var targetUrl = url.parse(
@@ -423,7 +423,7 @@ EpsilonHost.prototype.hubRequest = function(method, endpoint, data, callback) {
   }
 };
 
-EpsilonHost.prototype.data = function (subpath) {
+EpsilonJukebox.prototype.data = function (subpath) {
   if (typeof subpath !== 'undefined') {
     return path.resolve(this.config.data_dir, subpath);
   }
@@ -432,7 +432,7 @@ EpsilonHost.prototype.data = function (subpath) {
   }
 };
 
-EpsilonHost.formatMPDSong = function (song) {
+EpsilonJukebox.formatMPDSong = function (song) {
   return {
     id:       +song.Id,
     title:     song.Title,
@@ -442,4 +442,4 @@ EpsilonHost.formatMPDSong = function (song) {
   };
 };
 
-module.exports = EpsilonHost;
+module.exports = EpsilonJukebox;

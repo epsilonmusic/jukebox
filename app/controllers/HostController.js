@@ -1,8 +1,8 @@
-var url         = require("url")
-  , fs          = require("fs")
-  , gui         = require("nw.gui")
-  , path        = require("path")
-  , EpsilonHost = require("./lib/epsilon-host.js")
+var url            = require("url")
+  , fs             = require("fs")
+  , gui            = require("nw.gui")
+  , path           = require("path")
+  , EpsilonJukebox = require("./lib/epsilon-jukebox.js")
   ;
 
 function HostController(config) {
@@ -109,7 +109,7 @@ HostController.prototype.unsharedView = function () {
             return;
           }
 
-          self.host = new EpsilonHost({
+          self.host = new EpsilonJukebox({
             id:       localStorage["id"],
             token:    localStorage["token"],
             library:  localStorage["library"],
