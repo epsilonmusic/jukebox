@@ -42,5 +42,10 @@
 	<true/>
 	<key>SCMRevision</key>
 	<string>270019</string>
+  <key>LSEnvironment</key>
+  <dict>
+    <key>PATH</key>
+    <string>/usr/local/bin:/usr/bin:/bin</string>
+  </dict>
 </dict>
 </plist>
