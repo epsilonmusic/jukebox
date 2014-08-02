@@ -106,15 +106,17 @@ a.button.blue:hover{
 }
 
 .titlebar-drag-region{
-  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 48px;
+  right: 0;
+  width: auto;
   height: 2em;
 
   -webkit-app-region: drag;
 }
 
 .titlebar{
-  position: fixed;
-  top: 0;
   height: 2em;
   border-bottom: 1px solid #444;
   width: 100%;
