@@ -79,12 +79,12 @@ install-Linux: node_modules ${APPFILES} support/linux/${PKGNAME}.desktop
 	install -D -m644 LICENSE "${DESTDIR}/${PREFIX}/share/licenses/${PKGNAME}"
 	
 	for size in ${LINUX_ICON_SIZES}; do \
-		install -D -m644 support/linux/icons/$$size/${PKGNAME}.png \
-			"${DESTDIR}/${PREFIX}/share/icons/hicolor/$$size/${PKGNAME}.png"; \
+		install -D -m644 support/linux/icons/$$size/apps/${PKGNAME}.png \
+			"${DESTDIR}/${PREFIX}/share/icons/hicolor/$$size/apps/${PKGNAME}.png"; \
 	done
 	
-	install -D -m644 support/linux/icons/scalable/${PKGNAME}.svg \
-		"${DESTDIR}/${PREFIX}/share/icons/hicolor/scalable/${PKGNAME}.svg"
+	install -D -m644 support/linux/icons/scalable/apps/${PKGNAME}.svg \
+		"${DESTDIR}/${PREFIX}/share/icons/hicolor/scalable/apps/${PKGNAME}.svg"
 
 # Additional tasks
 
