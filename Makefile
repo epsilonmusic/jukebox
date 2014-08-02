@@ -1,8 +1,8 @@
 APPNAME    = Epsilon
 PKGNAME    = epsilon-jukebox
 
-APPCONTENT = app package.json LICENSE
-APPFILES   = $(shell find app -type f -print) package.json LICENSE
+APPCONTENT = app package.json LICENSE README.md
+APPFILES   = $(shell find app -type f -print) package.json LICENSE README.md
 
 NWVERSION  = v0.10.0
 NWOSX      = node-webkit-${NWVERSION}-osx-ia32
