@@ -14,7 +14,7 @@ ifneq (${OS},Windows_NT)
 OS = $(shell uname -s)
 endif
 
-LINUX_ICON_SIZES = 32x32 48x48 384x384
+LINUX_ICON_SIZES = 16x16 32x32 48x48 384x384
 
 # Dependencies
 
