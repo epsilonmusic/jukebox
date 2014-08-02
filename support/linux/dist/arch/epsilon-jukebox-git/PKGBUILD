@@ -7,12 +7,15 @@ pkgdesc="Music playlist sharing app."
 arch=('i686', 'x86_64')
 url="http://epsilonmusic.co/"
 license=('BSD')
-depends=('node-webkit' 'mpd')
+depends=('node-webkit' 'mpd' 'gtk-update-icon-cache')
 makedepends=('nodejs' 'git')
 conflicts=('epsilon-jukebox')
 provides=('epsilon-jukebox')
-source=("$pkgname"::'git+https://github.com/epsilonmusic/jukebox.git')
-md5sums=('SKIP')
+install='epsilon-jukebox-git.install'
+source=("$pkgname"::'git+https://github.com/epsilonmusic/jukebox.git'
+        'epsilon-jukebox-git.install')
+md5sums=('SKIP'
+         '227e320da86d173d579b5b94b83bf48c')
 
 pkgver() {
   cd "$pkgname"
@@ -23,3 +26,5 @@ package() {
   cd "$pkgname"
   make PREFIX=/usr DESTDIR="$pkgdir" install
 }
+
+
