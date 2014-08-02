@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Epsilon
+Comment=Your online music playlist, socialized.
+Exec=epsilon-jukebox
+Icon=epsilon-jukebox
+Terminal=false
+Categories=AudioVideo;Audio;Player;Music;

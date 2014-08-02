@@ -7,7 +7,8 @@
     "resizable": false,
     "width": 300,
     "height": 500,
-    "frame": false
+    "frame": false,
+    "icon": "app/res/titlebar-icon-small.png"
   },
   "dependencies": {
     "mpd": "1.0.x"

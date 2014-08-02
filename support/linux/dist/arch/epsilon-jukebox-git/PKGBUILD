@@ -1,0 +1,25 @@
+# Maintainer: Devyn Cairns <devyn.cairns@gmail.com>
+
+pkgname=epsilon-jukebox-git
+pkgver=0.0.0
+pkgrel=1
+pkgdesc="Music playlist sharing app."
+arch=('i686', 'x86_64')
+url="http://epsilonmusic.co/"
+license=('BSD')
+depends=('node-webkit' 'mpd')
+makedepends=('nodejs' 'git')
+conflicts=('epsilon-jukebox')
+provides=('epsilon-jukebox')
+source=("$pkgname"::'git+https://github.com/epsilonmusic/jukebox.git')
+md5sums=('SKIP')
+
+pkgver() {
+  cd "$pkgname"
+  printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+package() {
+  cd "$pkgname"
+  make PREFIX=/usr DESTDIR="$pkgdir" install
+}
