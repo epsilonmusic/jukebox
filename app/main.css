@@ -105,9 +105,16 @@ a.button.blue:hover{
   color: #333;
 }
 
+.titlebar-drag-region{
+  width: 100%;
+  height: 2em;
+
+  -webkit-app-region: drag;
+}
 
 .titlebar{
-  -webkit-app-region: drag;
+  position: fixed;
+  top: 0;
   height: 2em;
   border-bottom: 1px solid #444;
   width: 100%;
@@ -200,11 +207,19 @@ form input.submit:hover{
 #dragbox .overlay{
   display: block;
   z-index: 99;
-  width: 100%;
-  height: 100%;
   position: absolute;
-  top:28px;
-  left:0;
+
+  top: 28px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  width: auto;
+  height: auto;
+}
+
+#dragbox .fallback{
+  display: none;
 }
 
 #over-arrow, #ready{

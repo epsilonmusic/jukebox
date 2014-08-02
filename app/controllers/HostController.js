@@ -38,7 +38,6 @@ HostController.prototype.configureAndThen = function (callback) {
 HostController.prototype.unsharedView = function () {
   var self = this;
 
-  // TODO: make UX better with CSS classes
   function setState(name, message) {
     switch (name) {
       case "default":
@@ -54,6 +53,36 @@ HostController.prototype.unsharedView = function () {
         $("#share_link").removeClass("disabled");
         $("#dragbox").addClass("ready");
         break;
+    }
+  }
+
+  function setPath(path, verb) {
+    fs.readdir(path, function (err, files) {
+      if (err) {
+        setState('error', "please "+verb+" a folder");
+      }
+      else if (files.length < 1) {
+        setState('error', "please "+verb+" a non-empty folder");
+      }
+      else {
+        setState('ready');
+        localStorage["library"] = path;
+      }
+    });
+  }
+
+  function setPathFromFiles(files, verb) {
+    if (typeof verb === 'undefined') verb = 'drop';
+
+    switch (files.length) {
+      case 0:
+        setState('error', "please "+verb+" a folder");
+        break;
+      case 1:
+        setPath(files[0].path, verb);
+        break;
+      default:
+        $("#dragbox .message").text("please "+verb+" only one folder");
     }
   }
 
@@ -74,28 +103,15 @@ HostController.prototype.unsharedView = function () {
     });
 
     $("#dragbox")[0].addEventListener("drop", function (e) {
-      switch (e.dataTransfer.files.length) {
-        case 0:
-          setState('error', "please drop a folder");
-          break;
-        case 1:
-          var path = e.dataTransfer.files[0].path;
-          fs.readdir(path, function (err, files) {
-            if (err) {
-              setState('error', "please drop a folder");
-            }
-            else if (files.length < 1) {
-              setState('error', "please drop a non-empty folder");
-            }
-            else {
-              setState('ready');
-              localStorage["library"] = path;
-            }
-          });
-          break;
-        default:
-          $("#dragbox .message").text("please drop only one folder");
-      }
+      setPathFromFiles(e.dataTransfer.files);
+    });
+
+    $("#dragbox .fallback").on("change", function (e) {
+      setPathFromFiles(this.files, "choose");
+    });
+
+    $("#dragbox .overlay").on("click", function (e) {
+      $("#dragbox .fallback").trigger("click");
     });
 
     $("#share_link").click(function (e) {
@@ -140,7 +156,7 @@ HostController.prototype.sharedView = function () {
     $("#playlist_link").click(function (e) {
       e.preventDefault();
 
-      require('nw.gui').Shell.openExternal(playlistUrl);
+      gui.Shell.openExternal(playlistUrl);
     });
 
     $("#unshare_link").click(function (e) {

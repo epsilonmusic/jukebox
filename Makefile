@@ -4,6 +4,10 @@ APPNAME  = Epsilon
 NWVERSION = v0.10.0
 NWOSX     = node-webkit-${NWVERSION}-osx-ia32
 
+ifneq (${OS},Windows_NT)
+OS = $(shell uname -s)
+endif
+
 all: build/osx/${APPNAME}.app build/win/${APPNAME} build/linux32/${APPNAME}
 
 # Final results
@@ -43,6 +47,18 @@ cache:
 node_modules: package.json
 	npm install
 
+# Additional tasks
+
+run: all run-${OS}
+
+run-Windows_NT:
+
+run-Darwin: build/osx/Epsilon.app
+	open build/osx/Epsilon.app
+
+run-Linux: build/Epsilon.nw
+	nw build/Epsilon.nw
+
 clean:
 	rm -r build
 
@@ -54,4 +70,4 @@ clean-cache:
 
 clean-all: clean clean-deps clean-cache
 
-.PHONY: all clean clean-deps clean-cache clean-all
+.PHONY: all clean clean-deps clean-cache clean-all run-Windows_NT run-Darwin run-Linux
