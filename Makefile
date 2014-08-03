@@ -9,6 +9,9 @@ NWVERSION  = v0.10.1
 NWOSX      = node-webkit-${NWVERSION}-osx-ia32
 NWWIN      = node-webkit-${NWVERSION}-win-ia32
 
+MPDWINVER  = 0.17.4
+MPDWIN     = mpd-${MPDWINVER}-win32
+
 PREFIX     = /usr/local
 DESTDIR    =
 
@@ -33,6 +36,12 @@ cache/${NWWIN}: | cache
 	curl -o ${NWWIN}.zip \
 		"http://dl.node-webkit.org/${NWVERSION}/${NWWIN}.zip" && \
 	unzip ${NWWIN}.zip
+
+cache/${MPDWIN}: | cache
+	cd cache && \
+	curl -o ${MPDWIN}.zip \
+		"http://www.musicpd.org/download/win32/${MPDWINVER}/${MPDWIN}.zip" && \
+	unzip ${MPDWIN}.zip
 
 cache:
 	mkdir -p $@
@@ -60,10 +69,11 @@ build/osx/${APPNAME}.app: ${APPFILES} \
 
 build/win/${APPNAME}: node_modules ${APPFILES} \
 		support/win/set-resources.js support/win/${APPNAME}.ico \
-		| cache/${NWWIN} build/win
+		| cache/${NWWIN} cache/${MPDWIN} build/win
 
 	rm -rf build/win/${APPNAME}
 	cp -r cache/${NWWIN} build/win/${APPNAME}
+	cp -r cache/${MPDWIN} build/win/${APPNAME}/mpd
 
 	rm build/win/${APPNAME}/nwsnapshot.exe
 	mv build/win/${APPNAME}/{,nw-}credits.html

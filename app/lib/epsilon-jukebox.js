@@ -50,7 +50,8 @@ EpsilonJukebox.prototype.start = function (callback) {
 
   console.log("Starting MPD");
 
-  this.mpdProcess = spawn('mpd', ['--no-daemon', this.data('mpd.conf')]);
+  this.mpdProcess = spawn(this.mpdPath(), 
+                          ['--no-daemon', this.data('mpd.conf')]);
 
   this.mpdProcess.stdout.on('data', function (data) {
     console.log('mpd stdout: ' + data);
@@ -207,6 +208,7 @@ EpsilonJukebox.prototype.writeMPDConfig = function () {
       ['music_directory    "' + this.config.library + '"',
        'playlist_directory "' + this.data("mpd/playlists") + '"',
        'db_file            "' + this.data("mpd/database") + '"',
+       'log_file           "' + this.data("mpd/log.txt") + '"',
        'pid_file           "' + this.data("mpd/pid") + '"',
        'state_file         "' + this.data("mpd/state") + '"',
        'sticker_file       "' + this.data("mpd/sticker.sql") + '"',
@@ -429,6 +431,22 @@ EpsilonJukebox.prototype.data = function (subpath) {
   }
   else {
     return path.resolve(this.config.data_dir);
+  }
+};
+
+EpsilonJukebox.prototype.mpdPath = function () {
+  try {
+    // Ain't this robust? ;)
+    // XXX
+    var execDir = path.dirname(process.execPath);
+
+    console.log(execDir);
+
+    fs.readdirSync(path.resolve(execDir, "mpd"));
+
+    return path.resolve(execDir, "mpd/bin/mpd");
+  } catch (ex) {
+    return "mpd";
   }
 };
 
