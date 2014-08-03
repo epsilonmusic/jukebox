@@ -12,5 +12,8 @@
   },
   "dependencies": {
     "mpd": "1.0.x"
+  },
+  "devDependencies": {
+    "rcedit": "0.2.x"
   }
 }

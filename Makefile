@@ -3,9 +3,11 @@ PKGNAME    = epsilon-jukebox
 
 APPCONTENT = app package.json LICENSE README.md
 APPFILES   = $(shell find app -type f -print) package.json LICENSE README.md
+APPVERSION = 0.0.1
 
-NWVERSION  = v0.10.0
+NWVERSION  = v0.10.1
 NWOSX      = node-webkit-${NWVERSION}-osx-ia32
+NWWIN      = node-webkit-${NWVERSION}-win-ia32
 
 PREFIX     = /usr/local
 DESTDIR    =
@@ -16,6 +18,8 @@ endif
 
 LINUX_ICON_SIZES = 16x16 32x32 48x48 384x384
 
+all: build/osx/${APPNAME}.app build/win/${APPNAME}
+
 # Dependencies
 
 cache/${NWOSX}: | cache
@@ -23,6 +27,12 @@ cache/${NWOSX}: | cache
 	curl -o ${NWOSX}.zip \
 		"http://dl.node-webkit.org/${NWVERSION}/${NWOSX}.zip" && \
 	unzip ${NWOSX}.zip
+
+cache/${NWWIN}: | cache
+	cd cache && \
+	curl -o ${NWWIN}.zip \
+		"http://dl.node-webkit.org/${NWVERSION}/${NWWIN}.zip" && \
+	unzip ${NWWIN}.zip
 
 cache:
 	mkdir -p $@
@@ -32,12 +42,10 @@ node_modules: package.json
 
 # Final results
 
-all: build/osx/${APPNAME}.app build/win/${APPNAME}
-
-build/osx/${APPNAME}.app: node_modules ${APPFILES} \
+build/osx/${APPNAME}.app: ${APPFILES} \
 		support/osx/Info.plist support/osx/${APPNAME}.icns \
 		| cache/${NWOSX} build/osx
-	
+
 	rm -rf build/osx/${APPNAME}.app
 	cp -r cache/${NWOSX}/node-webkit.app build/osx/${APPNAME}.app
 
@@ -45,10 +53,31 @@ build/osx/${APPNAME}.app: node_modules ${APPFILES} \
 	cp support/osx/${APPNAME}.icns build/osx/${APPNAME}.app/Contents/Resources/
 
 	mkdir build/osx/${APPNAME}.app/Contents/Resources/app.nw
-	cp -r node_modules build/osx/${APPNAME}.app/Contents/Resources/app.nw/
 	cp -r ${APPCONTENT} build/osx/${APPNAME}.app/Contents/Resources/app.nw/
 
-build/win/${APPNAME}: node_modules ${APPFILES} | build/win
+	cd build/osx/${APPNAME}.app/Contents/Resources/app.nw && \
+		npm install --production
+
+build/win/${APPNAME}: node_modules ${APPFILES} \
+		support/win/set-resources.js support/win/${APPNAME}.ico \
+		| cache/${NWWIN} build/win
+
+	rm -rf build/win/${APPNAME}
+	cp -r cache/${NWWIN} build/win/${APPNAME}
+
+	rm build/win/${APPNAME}/nwsnapshot.exe
+	mv build/win/${APPNAME}/{,nw-}credits.html
+	mv build/win/${APPNAME}/{nw,${APPNAME}}.exe
+
+	node support/win/set-resources.js \
+		build/win/${APPNAME}/${APPNAME}.exe \
+		"${APPVERSION}" "${APPVERSION}" "${APPVERSION}" \
+		support/win/${APPNAME}.ico
+
+	cp -r ${APPCONTENT} build/win/${APPNAME}/
+
+	cd build/win/${APPNAME} && \
+		npm install --production
 
 build build/osx build/win:
 	mkdir -p $@
@@ -57,7 +86,7 @@ build build/osx build/win:
 
 install: install-${OS}
 
-install-Linux: node_modules ${APPFILES} support/linux/${PKGNAME}.desktop
+install-Linux: ${APPFILES} support/linux/${PKGNAME}.desktop
 	install -d "${DESTDIR}/${PREFIX}/bin"
 	echo -e "#!/bin/sh\nexec nw ${PREFIX}/lib/${PKGNAME}" \
 		> "${DESTDIR}/${PREFIX}/bin/${PKGNAME}"
@@ -71,7 +100,8 @@ install-Linux: node_modules ${APPFILES} support/linux/${PKGNAME}.desktop
 	find "${DESTDIR}/${PREFIX}/lib/${PKGNAME}/" \
 		-type f -exec chmod 0644 {} \;
 	
-	cp --preserve=mode -r node_modules "${DESTDIR}/${PREFIX}/lib/${PKGNAME}/"
+	cd "${DESTDIR}/${PREFIX}/lib/${PKGNAME}/" && \
+		npm install --production
 	
 	install -D -m644 support/linux/${PKGNAME}.desktop \
 		"${DESTDIR}/${PREFIX}/share/applications/${PKGNAME}.desktop"
