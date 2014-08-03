@@ -205,7 +205,7 @@ EpsilonJukebox.prototype.writeMPDConfig = function () {
   var mpdConf = fs.openSync(this.data("mpd.conf"), "w");
 
   fs.writeSync(mpdConf,
-      ['music_directory    "' + this.config.library + '"',
+      ['music_directory    "' + this.escape(this.config.library) + '"',
        'playlist_directory "' + this.dataEsc("mpd/playlists") + '"',
        'db_file            "' + this.dataEsc("mpd/database") + '"',
        'log_file           "' + this.dataEsc("mpd/log.txt") + '"',
@@ -434,8 +434,12 @@ EpsilonJukebox.prototype.data = function (subpath) {
   }
 };
 
+EpsilonJukebox.prototype.escape = function (path) {
+  return path.replace(/\\/g, "\\\\").replace(/"/g, "\\\"");
+};
+
 EpsilonJukebox.prototype.dataEsc = function (subpath) {
-  return this.data(subpath).replace(/\\/g, "\\\\").replace(/"/g, "\\\"");
+  return this.escape(this.data(subpath));
 };
 
 EpsilonJukebox.prototype.mpdPath = function () {
