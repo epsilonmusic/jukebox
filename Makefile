@@ -71,7 +71,6 @@ build/win/${APPNAME}: node_modules ${APPFILES} \
 
 	node support/win/set-resources.js \
 		build/win/${APPNAME}/${APPNAME}.exe \
-		"${APPVERSION}" "${APPVERSION}" "${APPVERSION}" \
 		support/win/${APPNAME}.ico
 
 	cp -r ${APPCONTENT} build/win/${APPNAME}/

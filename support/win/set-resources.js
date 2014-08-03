@@ -1,16 +1,19 @@
 #!/usr/bin/env node
 
-if (process.argv.length >= 7) {
+if (process.argv.length >= 4) {
   var rcedit = require('rcedit');
 
   rcedit(process.argv[2], {
-    "version-string":  process.argv[3],
-    "file-version":    process.argv[4],
-    "product-version": process.argv[5],
-    "icon":            process.argv[6]
-  }, function () {
-    process.exit();
+    "icon": process.argv[3]
+  }, function (error) {
+    if (error) {
+      console.log(error);
+      process.exit(1);
+    } else {
+      process.exit();
+    }
   });
 } else {
-  console.log("Usage: " + process.argv[1] + " <exe> <version-string> <file-version> <product-version> <icon>");
+  console.log("Usage: " + process.argv[1] + " <exe> <icon>");
+  process.exit(1);
 }
