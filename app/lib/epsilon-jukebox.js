@@ -206,12 +206,12 @@ EpsilonJukebox.prototype.writeMPDConfig = function () {
 
   fs.writeSync(mpdConf,
       ['music_directory    "' + this.config.library + '"',
-       'playlist_directory "' + this.data("mpd/playlists") + '"',
-       'db_file            "' + this.data("mpd/database") + '"',
-       'log_file           "' + this.data("mpd/log.txt") + '"',
-       'pid_file           "' + this.data("mpd/pid") + '"',
-       'state_file         "' + this.data("mpd/state") + '"',
-       'sticker_file       "' + this.data("mpd/sticker.sql") + '"',
+       'playlist_directory "' + this.dataEsc("mpd/playlists") + '"',
+       'db_file            "' + this.dataEsc("mpd/database") + '"',
+       'log_file           "' + this.dataEsc("mpd/log.txt") + '"',
+       'pid_file           "' + this.dataEsc("mpd/pid") + '"',
+       'state_file         "' + this.dataEsc("mpd/state") + '"',
+       'sticker_file       "' + this.dataEsc("mpd/sticker.sql") + '"',
        'port               "6616"',
        'auto_update        "yes"'].join("\n"));
 
@@ -432,6 +432,10 @@ EpsilonJukebox.prototype.data = function (subpath) {
   else {
     return path.resolve(this.config.data_dir);
   }
+};
+
+EpsilonJukebox.prototype.dataEsc = function (subpath) {
+  return this.data(subpath).replace(/\\/g, "\\\\").replace(/"/g, "\\\"");
 };
 
 EpsilonJukebox.prototype.mpdPath = function () {
